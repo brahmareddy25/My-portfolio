@@ -2,7 +2,8 @@ const revealItems = document.querySelectorAll(".reveal-sequence");
 const contactForm = document.querySelector("#contact-form");
 const formMessage = document.querySelector("#form-message");
 const tcsDuration = document.querySelector("#tcs-duration");
-const SHEET_ENDPOINT = "";
+const submitFrame = document.querySelector("#sheet-submit-frame");
+const SHEET_ENDPOINT = "https://script.google.com/macros/s/AKfycbzr_dOcv5xhre6n_pNnJCYQX3WchU-Vs9pxXKsiIH_JcA9o6NE6jb28UZq1VChByRPqfg/exec";
 
 const revealObserver = new IntersectionObserver(
   (entries, observer) => {
@@ -90,19 +91,19 @@ if (contactForm) {
       formMessage.textContent = "Sending your details...";
       formMessage.dataset.state = "loading";
 
-      const response = await fetch(SHEET_ENDPOINT, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
+      const params = new URLSearchParams({
+        nameOrCompany: payload.nameOrCompany,
+        email: payload.email,
+        phone: payload.phone,
+        submittedAt: new Date().toISOString(),
       });
 
-      if (!response.ok) {
-        throw new Error("Request failed");
+      if (submitFrame) {
+        submitFrame.src = `${SHEET_ENDPOINT}?${params.toString()}`;
       }
 
-      formMessage.textContent = "Details sent successfully.";
+      formMessage.textContent =
+        "Thank you for choosing me, I will reach you shortly";
       formMessage.dataset.state = "success";
       contactForm.reset();
     } catch (error) {
